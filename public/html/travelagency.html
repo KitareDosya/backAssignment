@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Agency</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #bookingForm {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 9999;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        #bookingForm form {
+            max-width: 500px;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            margin-top: 5%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            animation: fadeOut 0.5s;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">Dos Travel</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="./travelagency">Destinations</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="./contacts">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+        <h2>Available Tours</h2>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src='img/kyoto.png' class="card-img-top" style="height: 200px;" alt="Japan Kyoto">
+                    <div class="card-body">
+                        <h5 class="card-title">Japan Kyoto</h5>
+                        <p class="card-text">Experience the serenity and elegance of Kyoto in Japan. From traditional tea ceremonies to iconic cherry blossoms, immerse yourself in the rich cultural heritage and picturesque landscapes that Kyoto has to offer.</p>
+                        <a class="btn btn-primary" onclick="showForm('Kyoto')">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <img src='img/rome.png' class="card-img-top" style="height: 200px;" alt="Italy Rome">
+                    <div class="card-body">
+                        <h5 class="card-title">Italy Rome</h5>
+                        <p class="card-text">Discover the eternal beauty of Rome in Italy. Walk through ancient ruins, indulge in delicious cuisine, and soak in the vibrant atmosphere of the city. A perfect blend of history, art, and culinary delights awaits you.</p>
+                        <a class="btn btn-primary" onclick="showForm('Rome')">Book Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <img src='img/sydney.png' class="card-img-top" style="height: 200px;" alt="Australia Sydney">
+                    <div class="card-body">
+                        <h5 class="card-title">Australia Sydney</h5>
+                        <p class="card-text">Explore the vibrant city of Sydney in Australia. From the iconic Sydney Opera House to beautiful beaches, Sydney offers a perfect blend of urban sophistication and natural beauty. Join us for an unforgettable experience down under.
+                        </p>
+                        <a class="btn btn-primary" onclick="showForm('Sydney')">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src='img/rio.png' class="card-img-top" style="height: 200px;" alt="Brazil Rio de Janeiro">
+                    <div class="card-body">
+                        <h5 class="card-title">Brazil Rio de Janeiro</h5>
+                        <p class="card-text">Dance to the rhythm of samba in the lively streets of Rio de Janeiro, Brazil. Explore the iconic Christ the Redeemer statue, relax on Copacabana beach, and immerse yourself in the vibrant culture of this South American gem.</p>
+                        <a class="btn btn-primary" onclick="showForm('Rio de Janeiro')">Book Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <img src='img/bangkok.png' class="card-img-top" style="height: 200px;" alt="Thailand Bangkok">
+                    <div class="card-body">
+                        <h5 class="card-title">Thailand Bangkok</h5>
+                        <p class="card-text">Experience the bustling city life and rich traditions of Bangkok in Thailand. From ornate temples to vibrant street markets, Bangkok offers a perfect blend of modernity and tradition. Join us for an adventure in the Land of Smiles.
+                        </p>
+                        <a class="btn btn-primary" onclick="showForm('Bangkok')">Book Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <img src='img/antalia.png' class="card-img-top" style="height: 200px;" alt="Turkey Antalia">
+                    <div class="card-body">
+                        <h5 class="card-title">Turkey Antalia</h5>
+                        <p class="card-text">Explore the captivating beauty of Antalia in Turkey. Immerse yourself in the rich history, vibrant culture, and stunning landscapes. Whether you're a history enthusiast, a nature lover, or simply seeking a relaxing getaway, Turkey
+                            Antalia has something for everyone.</p>
+                        <a class="btn btn-primary" onclick="showForm('Antalia')">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bookingForm" style="display: none;">
+            <form action="/submitForm" method="post">
+                <div class="form-group">
+                    <label for="cityName">City:</label>
+                    <input type="text" class="form-control" id="cityName" name="cityName" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="adults">Adults:</label>
+                    <input type="number" class="form-control" id="adults" name="adults" placeholder="How many adults?">
+                </div>
+                <div class="form-group">
+                    <label for="children">Children:</label>
+                    <input type="number" class="form-control" id="children" name="children" placeholder="How many children?">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <label for="hotelRating">Hotel Rating:</label>
+                    <select class="form-control" id="hotelRating" name="hotelRating">
+                        <option value="1">1 Star</option>
+                        <option value="2">2 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="5">5 Stars</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date arrival:</label>
+                    <input type="date" class="form-control" id="dateArrival" name="dateArrival" placeholder="Enter arriving date:">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date departure:</label>
+                    <input type="date" class="form-control" id="dateDeparture" name="dateDeparture" placeholder="Enter departure date:">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-secondary" onclick="hideForm()">Exit</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function showForm(cityname) {
+            document.getElementById("bookingForm").style.display = "block";
+            document.getElementById("cityName").value = cityname;
+            console.log("Form is shown");
+        }
+
+        function hideForm() {
+            document.getElementById("bookingForm").style.display = "none";
+            console.log("Form is hidden");
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+{
+    "name": "backendassignment",
+    "version": "1.0.0",
+    "description": "travel agency",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DosyaKitarov/backendAssignment.git"
+    },
+    "author": "Dos",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/DosyaKitarov/backendAssignment/issues"
+    },
+    "homepage": "https://github.com/DosyaKitarov/backendAssignment#readme",
+    "dependencies": {
+        "axios": "^1.6.7",
+        "body-parser": "^1.20.2",
+        "ejs": "^3.1.9",
+        "express": "^4.18.2",
+        "node-fetch": "^3.3.2",
+        "unsplash-js": "^7.0.19"
+    }
+}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Submission Result</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-5">Congratulations!</h1>
+        <p class="lead">Based on your data:</p>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">City:</h5>
+                <p class="card-text">
+                    <%= cityName %>
+                </p>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Persons:</h5>
+                <p class="card-text">
+                    Adults:
+                    <%= adults %>
+                        <br> Children:
+                        <%= children %>
+                </p>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Phone:</h5>
+                <p class="card-text">
+                    <%= phone %>
+                </p>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Hotel Rating:</h5>
+                <p class="card-text">
+                    <%= hotelRating %>
+                </p>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Date:</h5>
+                <p class="card-text">
+                    Date of arrival:
+                    <%= dateArrival %>
+                        <br> Date of departure:
+                        <%= dateDeparture %>
+                </p>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Price:</h5>
+                <p class="card-text">
+                    <%= price %>
+                </p>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Weather:</h5>
+                <p class="card-text">
+                    Temperature:
+                    <%= temp %>
+                        <br> Condition:
+                        <%= condition %>
+                </p>
+            </div>
+        </div>
+
+        <a href="/travelagency" class="btn btn-primary mt-4">Exit</a>
+    </div>
+
+    <!-- Add Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
