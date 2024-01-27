@@ -4,21 +4,19 @@ app.set('view engine', 'ejs');
 const axios = require('axios');
 app.use(express.static("public"));
 const router = express.Router();
-const path = require('path'); // Import the path module
+const path = require('path');
 const bodyParser = require('body-parser');
 
-const apiKey = "24d64906-30b8-4cf8-bb29-aa672b6bfbd5"; //bd5e378503939ddaee76f12ad7a97608
-// Use body-parser to handle form data
+const apiKey = "24d64906-30b8-4cf8-bb29-aa672b6bfbd5";
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get('/travelagency', (req, res) => {
-    const filePath = path.join(__dirname, '../public/html', 'travelagency.html'); // Create an absolute path
+    const filePath = path.join(__dirname, '../public/html', 'travelagency.html');
     res.sendFile(filePath);
 });
 
 
 router.post('/submitForm', (req, res) => {
-    // Обработка данных из формы
     const adults = req.body.adults;
     const children = req.body.children;
     const phone = req.body.phone;
@@ -114,10 +112,9 @@ router.post('/submitForm', (req, res) => {
             default:
                 break;
         }
-        // Рендеринг страницы с результатами
 
         if (price == 0) {
-            const filePath = path.join(__dirname, '../public/html', 'flightCanceled.html'); // Create an absolute path
+            const filePath = path.join(__dirname, '../public/html', 'flightCanceled.html');
             res.sendFile(filePath);
         } else {
 
