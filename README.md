@@ -25,5 +25,6 @@ This is the documentation for the backend assignment application.
 ## Running the Application
 
 To run the application, use the following command:
-
-npm start
+    ```shell
+    npm start
+    ```
