@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>History</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #bookingForm {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 9999;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        #bookingForm form {
+            max-width: 500px;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            margin-top: 1%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            animation: fadeOut 0.5s;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">Dos Travel</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./">Home</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="./travelagency">Destinations</a>
+                    </li>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="./history">History</a>
+                    </li>
+
+                    <li class="nav-item "></li>
+                    <a class="nav-link" href="./contacts">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Booking History</h1>
+        <% historyJson.forEach(function(item, index) { %>
+            <% if (index % 3 === 0) { %>
+                <div class="row">
+                    <% } %>
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">City Name:
+                                        <%= item.cityName %>
+                                    </h5>
+
+                                    <p class="card-text">Adults:
+                                        <%= item.adults %>
+                                    </p>
+
+                                    <p class="card-text">Children:
+                                        <%= item.children %>
+                                    </p>
+
+                                    <p class="card-text">Phone:
+                                        <%= item.phone %>
+
+                                    </p>
+
+                                    <p class="card-text">Hotel Rating:
+                                        <%=item.hotelRating %>
+                                    </p>
+
+                                    <p class="card-text">Date of Arrival:
+                                        <%= item.dateArrival %>
+                                    </p>
+
+                                    <p class="card-text">Date of Departure:
+                                        <%= item.dateDeparture %>
+
+                                    </p>
+
+                                    <p class="card-text">Price:
+                                        <%= item.price %>
+                                    </p>
+
+                                    <p class="card-text">Temperature:
+                                        <%= item.temp %>
+                                    </p>
+                                    <p class="card-text">Condition:
+                                        <%= item.condition %>
+                                    </p>
+                                    <a class="btn btn-primary mb-3" onclick='showForm("<%=item.cityName%>","<%=index%>")'>Edit</a>
+                                    <form action="/history/delete/<%= index %>" method="POST">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <% if ((index + 1) % 3 === 0 || index === historyJson.length - 1) { %>
+                </div>
+                <% } %>
+                    <% }); %>
+    </div>
+    <div id="bookingForm" style="display: none;">
+        <form action="/history/edit/:" id="form" method="post">
+            <div class="form-group">
+                <label for="cityName">City:</label>
+                <input type="text" class="form-control" id="cityNameEdit" name="cityNameEdit" readonly>
+            </div>
+            <div class="form-group">
+                <label for="adults">Adults:</label>
+                <input type="number" class="form-control" id="adultsEdit" name="adultsEdit" placeholder="How many adults?">
+            </div>
+            <div class="form-group">
+                <label for="children">Children:</label>
+                <input type="number" class="form-control" id="childrenEdit" name="childrenEdit" placeholder="How many children?">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" class="form-control" id="phoneEdit" name="phoneEdit" placeholder="Enter your phone number">
+            </div>
+            <div class="form-group">
+                <label for="hotelRating">Hotel Rating:</label>
+                <select class="form-control" id="hotelRatingEdit" name="hotelRatingEdit">
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">Date arrival:</label>
+                <input type="date" class="form-control" id="dateArrivalEdit" name="dateArrivalEdit" placeholder="Enter arriving date:">
+            </div>
+            <div class="form-group">
+                <label for="date">Date departure:</label>
+                <input type="date" class="form-control" id="dateDepartureEdit" name="dateDepartureEdit" placeholder="Enter departure date:">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-secondary" onclick="hideForm()">Exit</button>
+        </form>
+
+    </div>
+    <script>
+        function showForm(cityname, index) {
+            document.getElementById("bookingForm").style.display = "block";
+            document.getElementById("cityNameEdit").value = cityname;
+            document.getElementById("form").action = "/history/edit/" + index;
+        }
+
+        function hideForm() {
+            document.getElementById("bookingForm").style.display = "none";
+        }
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

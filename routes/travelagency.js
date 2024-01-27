@@ -6,7 +6,7 @@ app.use(express.static("public"));
 const router = express.Router();
 const path = require('path');
 const bodyParser = require('body-parser');
-
+const fs = require('fs');
 const apiKey = "24d64906-30b8-4cf8-bb29-aa672b6bfbd5";
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -17,13 +17,13 @@ router.get('/travelagency', (req, res) => {
 
 
 router.post('/submitForm', (req, res) => {
-    const adults = req.body.adults;
-    const children = req.body.children;
-    const phone = req.body.phone;
-    const hotelRating = req.body.hotelRating;
-    const dateArrival = req.body.dateArrival;
-    const dateDeparture = req.body.dateDeparture;
-    const cityName = req.body.cityName;
+    adults = req.body.adults;
+    children = req.body.children;
+    phone = req.body.phone;
+    hotelRating = req.body.hotelRating;
+    dateArrival = req.body.dateArrival;
+    dateDeparture = req.body.dateDeparture;
+    cityName = req.body.cityName;
     var lat = 0;
     var lon = 0;
     switch (cityName) {
@@ -84,6 +84,7 @@ router.post('/submitForm', (req, res) => {
             break;
     }
     price *= adults;
+    hotelRating += " Star"
     if (children > 0) {
         for (let i = 0; i < children; i++) {
             price += 200;
@@ -117,7 +118,27 @@ router.post('/submitForm', (req, res) => {
             const filePath = path.join(__dirname, '../public/html', 'flightCanceled.html');
             res.sendFile(filePath);
         } else {
+            data = {
+                cityName: cityName,
+                adults: adults,
+                children: children,
+                phone: phone,
+                hotelRating: hotelRating,
+                dateArrival: dateArrival,
+                dateDeparture: dateDeparture,
+                price: price,
+                temp: temp,
+                condition: condition
+            }
 
+            let fileData = [];
+            if (fs.existsSync('history.json')) {
+                fileData = JSON.parse(fs.readFileSync('history.json'));
+            }
+
+            fileData.push(data);
+
+            fs.writeFileSync('history.json', JSON.stringify(fileData));
             res.render('result', { cityName, adults, children, phone, hotelRating, dateArrival, dateDeparture, price, temp, condition });
         }
     }).catch(error => {
