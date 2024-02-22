@@ -6,9 +6,30 @@ app.use(express.static("public"));
 const router = express.Router();
 const path = require('path');
 const bodyParser = require('body-parser');
-const fs = require('fs');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://admin:root@cluster0.txanfzf.mongodb.net/?retryWrites=true&w=majority";
+
 const apiKey = "24d64906-30b8-4cf8-bb29-aa672b6bfbd5";
 router.use(bodyParser.urlencoded({ extended: true }));
+
+const client = new MongoClient(uri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
+});
+async function run() {
+    try {
+        await client.connect();
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    } finally {
+        await client.close();
+    }
+}
+run().catch(console.dir);
+
 
 router.get('/travelagency', (req, res) => {
     const filePath = path.join(__dirname, '../public/html', 'travelagency.html');
@@ -93,7 +114,7 @@ router.post('/submitForm', (req, res) => {
     if (temp < 10) {
         price += 200;
     }
-    url = `https://api.weather.yandex.ru/v2/forecast?lat=${lat}&lon=${lon}`;
+    url = `https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}`;
     var temp
     var condition
     axios.get(url, {
@@ -131,14 +152,30 @@ router.post('/submitForm', (req, res) => {
                 condition: condition
             }
 
-            let fileData = [];
-            if (fs.existsSync('history.json')) {
-                fileData = JSON.parse(fs.readFileSync('history.json'));
+            async function sendData() {
+                try {
+                    await client.connect();
+                    const database = client.db('travelAgency');
+                    const collection = database.collection('history');
+                    const doc = {
+                        cityName: cityName,
+                        adults: adults,
+                        children: children,
+                        phone: phone,
+                        hotelRating: hotelRating,
+                        dateArrival: dateArrival,
+                        dateDeparture: dateDeparture,
+                        price: price,
+                        temp: temp,
+                        condition: condition
+                    };
+                    const result = await collection.insertOne(doc);
+                    console.log(`A document was inserted with the _id: ${result.insertedId}`);
+                } finally {
+                    await client.close();
+                }
             }
-
-            fileData.push(data);
-
-            fs.writeFileSync('history.json', JSON.stringify(fileData));
+            sendData().catch(console.dir);
             res.render('result', { cityName, adults, children, phone, hotelRating, dateArrival, dateDeparture, price, temp, condition });
         }
     }).catch(error => {

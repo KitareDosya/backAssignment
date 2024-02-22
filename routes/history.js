@@ -1,20 +1,48 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const fs = require('fs');
-historyJson = JSON.parse(fs.readFileSync('history.json', 'utf8'));
-console.log(historyJson);
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://admin:root@cluster0.txanfzf.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
+});
+async function run() {
+    try {
+        await client.connect();
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB! History");
+    } finally {
+        await client.close();
+    }
+}
+run().catch(console.dir);
+var historyJson;
+async function getJson(res) {
+    try {
+        await client.connect();
+        const db = client.db("travelAgency");
+        const collection = db.collection("history");
+        const history = await collection.find({}).toArray();
+        historyJson = history;
+        res.render('history', { historyJson });
+    } finally {
+        await client.close();
+    }
+}
 router.get('/history', (req, res) => {
-    historyJson = JSON.parse(fs.readFileSync('history.json', 'utf8'));
-    res.render('history', { historyJson });
+    getJson(res).catch(console.dir);
 });
 const apiKey = "24d64906-30b8-4cf8-bb29-aa672b6bfbd5";
 
 const bodyParser = require('body-parser');
+const { get } = require('./travelagency');
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.post('/history/edit/:index', (req, res) => {
-    historyJson = JSON.parse(fs.readFileSync('history.json', 'utf8'));
+router.post('/history/edit/:index', async(req, res) => {
     const index = req.params.index;
     switch (req.body.cityNameEdit) {
         case "Kyoto":
@@ -60,7 +88,7 @@ router.post('/history/edit/:index', (req, res) => {
         }
     }
 
-    url = `https://api.weather.yandex.ru/v2/forecast?lat=${lat}&lon=${lon}`;
+    url = `https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}`;
     axios.get(url, {
         headers: {
             'X-Yandex-API-Key': apiKey
@@ -97,11 +125,30 @@ router.post('/history/edit/:index', (req, res) => {
                 temp: temp,
                 condition: condition
             }
-            historyJson[index] = data;
-
-            fs.writeFileSync('history.json', JSON.stringify(historyJson));
-
-            res.redirect('/history');
+            let isConnected = false;
+            async function updateData() {
+                try {
+                    await client.connect();
+                    isConnected = true;
+                    const database = client.db('travelAgency');
+                    const collection = database.collection('history');
+                    const result = await collection.updateOne({ _id: historyJson[index]._id }, { $set: data });
+                    console.log(`${result.matchedCount} document(s) matched the query criteria.`);
+                } finally {
+                    if (isConnected) {
+                        await client.close();
+                    }
+                }
+            }
+            async function edit() {
+                try {
+                    await updateData();
+                    res.redirect('/history');
+                } catch (error) {
+                    console.error('Error updating data:', error);
+                }
+            }
+            edit();
         }
     }).catch(error => {
         console.error('Error fetching weather data:', error.message);
@@ -111,13 +158,33 @@ router.post('/history/edit/:index', (req, res) => {
 
 });
 
-router.post('/history/delete/:index', (req, res) => {
+router.post('/history/delete/:index', async(req, res) => {
     const index = req.params.index;
-    historyJson.splice(index, 1);
+    let isConnected = false;
 
-    fs.writeFileSync('history.json', JSON.stringify(historyJson));
+    async function deleteData() {
+        try {
+            await client.connect();
+            isConnected = true;
+            const database = client.db('travelAgency');
+            const collection = database.collection('history');
+            const result = await collection.deleteOne({ _id: historyJson[index]._id });
+            console.log(`${result.deletedCount} document(s) was/were deleted.`);
+        } finally {
+            if (isConnected) {
+                await client.close();
+            }
+        }
+    }
+
+    try {
+        await deleteData();
+    } catch (error) {
+        console.error('Error deleting data:', error);
+    }
 
     res.redirect('/history');
 });
+
 
 module.exports = router;
