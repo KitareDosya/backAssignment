@@ -19,22 +19,61 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+const db = client.db("travelAgency");
+const collection = db.collection("users");
 async function run() {
     try {
         await client.connect();
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-        await client.close();
-    }
+    } finally {}
 }
 run().catch(console.dir);
 
+async function isLoggedIn(req, res) {
+    try {
+        isLogged = req.cookies.isLogged;
+        if (isLogged) {
+            username = req.cookies.username;
+            tokenLS = req.cookies.token;
 
-router.get('/travelagency', (req, res) => {
-    const filePath = path.join(__dirname, '../public/html', 'travelagency.html');
-    res.sendFile(filePath);
+            try {
+                token = (await collection.findOne({ username: username })).token;
+
+                if (tokenLS == token) {
+                    res.render("travelagency", { username: username })
+                } else {
+                    res.clearCookie('isLogged');
+                    res.clearCookie('username');
+                    res.clearCookie('token');
+                    console.log("incorrect token");
+                    res.render("login", { username: "", isLogged: false });
+                }
+            } catch (error) {
+                // Handle any errors related to fetching user or token
+                console.error(error);
+            }
+        } else {
+            console.log(req.cookies.isLogged);
+            console.log("not logged");
+            res.render("login", { username: "", isLogged: false });
+        }
+    } catch (error) {
+        // Handle any connection-related errors
+        console.error(error);
+    } finally {}
+}
+router.get('/travelagency', async(req, res) => {
+    try {
+        await isLoggedIn(req, res);
+    } catch (error) {
+        // Handle any errors that may occur during the route processing
+        console.error(error);
+    }
+
 });
+
+
 
 
 router.post('/submitForm', (req, res) => {
@@ -149,33 +188,10 @@ router.post('/submitForm', (req, res) => {
                 dateDeparture: dateDeparture,
                 price: price,
                 temp: temp,
-                condition: condition
+                condition: condition,
+                username: req.cookies.username
             }
-
-            async function sendData() {
-                try {
-                    await client.connect();
-                    const database = client.db('travelAgency');
-                    const collection = database.collection('history');
-                    const doc = {
-                        cityName: cityName,
-                        adults: adults,
-                        children: children,
-                        phone: phone,
-                        hotelRating: hotelRating,
-                        dateArrival: dateArrival,
-                        dateDeparture: dateDeparture,
-                        price: price,
-                        temp: temp,
-                        condition: condition
-                    };
-                    const result = await collection.insertOne(doc);
-                    console.log(`A document was inserted with the _id: ${result.insertedId}`);
-                } finally {
-                    await client.close();
-                }
-            }
-            sendData().catch(console.dir);
+            sendDoc(data);
             res.render('result', { cityName, adults, children, phone, hotelRating, dateArrival, dateDeparture, price, temp, condition });
         }
     }).catch(error => {
@@ -185,6 +201,13 @@ router.post('/submitForm', (req, res) => {
     });
 
 });
-
-
+async function sendDoc(doc) {
+    col = client.db("travelAgency").collection("history");
+    const result = await col.insertOne(doc);
+    console.log(`A document was inserted with the _id: ${result.insertedId}`);
+}
+process.on('SIGINT', async() => {
+    await client.close();
+    process.exit();
+});
 module.exports = router;

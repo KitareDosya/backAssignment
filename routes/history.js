@@ -3,6 +3,7 @@ const axios = require('axios');
 const router = express.Router();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://admin:root@cluster0.txanfzf.mongodb.net/?retryWrites=true&w=majority";
+const cookieParser = require('cookie-parser');
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -10,32 +11,73 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+const db = client.db("travelAgency");
+const collection = db.collection("history");
 async function run() {
     try {
         await client.connect();
-        await client.db("admin").command({ ping: 1 });
+        await client.db("travelAgency").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB! History");
-    } finally {
-        await client.close();
-    }
+    } finally {}
 }
 run().catch(console.dir);
 var historyJson;
-async function getJson(res) {
+async function getJson(req, res) {
     try {
-        await client.connect();
-        const db = client.db("travelAgency");
-        const collection = db.collection("history");
-        const history = await collection.find({}).toArray();
-        historyJson = history;
+        const history = await collection.find({ username: req.cookies.username }).toArray();
+        const historyJson = history;
         res.render('history', { historyJson });
-    } finally {
-        await client.close();
+    } catch (error) {
+        // Handle any errors related to fetching history
+        console.error(error);
     }
 }
-router.get('/history', (req, res) => {
-    getJson(res).catch(console.dir);
+
+async function isLoggedIn(req, res) {
+    try {
+        col = db.collection("users");
+        isLogged = req.cookies.isLogged;
+
+        if (isLogged) {
+            username = req.cookies.username;
+            tokenLS = req.cookies.token;
+
+            try {
+                token = (await col.findOne({ username: username })).token;
+
+                if (tokenLS == token) {
+                    await getJson(req, res);
+                } else {
+                    res.clearCookie('isLogged');
+                    res.clearCookie('username');
+                    res.clearCookie('token');
+                    console.log("incorrect token");
+                    res.redirect('/login');
+                }
+            } catch (error) {
+                // Handle any errors related to fetching user or token
+                console.error(error);
+            }
+        } else {
+            console.log(req.cookies.isLogged);
+            console.log("not logged");
+            res.redirect('/login');
+        }
+    } catch (error) {
+        // Handle any connection-related errors
+        console.error(error);
+    } finally {}
+}
+
+router.get('/history', async(req, res) => {
+    try {
+        await isLoggedIn(req, res);
+    } catch (error) {
+        // Handle any errors that may occur during the route processing
+        console.error(error);
+    }
 });
+
 const apiKey = "24d64906-30b8-4cf8-bb29-aa672b6bfbd5";
 
 const bodyParser = require('body-parser');
@@ -128,16 +170,11 @@ router.post('/history/edit/:index', async(req, res) => {
             let isConnected = false;
             async function updateData() {
                 try {
-                    await client.connect();
                     isConnected = true;
-                    const database = client.db('travelAgency');
-                    const collection = database.collection('history');
                     const result = await collection.updateOne({ _id: historyJson[index]._id }, { $set: data });
                     console.log(`${result.matchedCount} document(s) matched the query criteria.`);
                 } finally {
-                    if (isConnected) {
-                        await client.close();
-                    }
+
                 }
             }
             async function edit() {
@@ -164,16 +201,11 @@ router.post('/history/delete/:index', async(req, res) => {
 
     async function deleteData() {
         try {
-            await client.connect();
             isConnected = true;
-            const database = client.db('travelAgency');
-            const collection = database.collection('history');
             const result = await collection.deleteOne({ _id: historyJson[index]._id });
             console.log(`${result.deletedCount} document(s) was/were deleted.`);
         } finally {
-            if (isConnected) {
-                await client.close();
-            }
+
         }
     }
 
@@ -186,5 +218,8 @@ router.post('/history/delete/:index', async(req, res) => {
     res.redirect('/history');
 });
 
-
+process.on('SIGINT', async() => {
+    await client.close();
+    process.exit();
+});
 module.exports = router;
