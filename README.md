@@ -7,7 +7,7 @@ This is the documentation for the backend assignment application.
 1. Clone the repository:
 
     ```shell
-    git clone https://github.com/DosyaKitarov/backendAssignment/tree/assignment
+    git clone https://github.com/DosyaKitarov/backendAssignment
     ```
 
 2. Navigate to the project directory:
