@@ -7,8 +7,9 @@ const trvl = require('./routes/travelagency');
 const static = require('./routes/static');
 const history = require('./routes/history');
 const login = require('./routes/login');
-app.use(helmet());
-
+app.use(helmet({
+    contentSecurityPolicy: false
+}));
 app.use('/', static);
 app.use('/', trvl);
 app.use('/', login);
