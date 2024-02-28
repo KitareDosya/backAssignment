@@ -18,7 +18,7 @@
     "homepage": "https://github.com/DosyaKitarov/backendAssignment#readme",
     "dependencies": {
         "axios": "^1.6.7",
-        "bcrypt": "^5.1.1",
+        "bcryptjs": "^2.4.3",
         "body-parser": "^1.20.2",
         "cookie-parser": "^1.4.6",
         "ejs": "^3.1.9",
@@ -31,6 +31,7 @@
         "node-localstorage": "^3.0.5",
         "passport": "^0.7.0",
         "passport-local": "^1.0.0",
+        "scrypt.js": "^0.3.0",
         "unsplash-js": "^7.0.19"
     }
 }
